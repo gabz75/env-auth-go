@@ -2,7 +2,9 @@ package main
 
 import (
     "net/http"
-
+    "github.com/gabz75/auth-api/controllers"
+    "github.com/gabz75/auth-api/services"
+    
     "github.com/gorilla/mux"
 )
 
@@ -22,19 +24,25 @@ var routes = Routes{
         "PostUser",
         "POST",
         "/users",
-        PostUser,
+        controllers.PostUser,
     },
     Route{
         "GetUser",
         "GET",
         "/users",
-        GetUser,
+        controllers.GetUser,
     },
     Route{
         "PostSession",
         "POST",
         "/sessions",
-        PostSession,
+        controllers.PostSession,
+    },
+    Route{
+        "GetSessions",
+        "GET",
+        "/sessions",
+        controllers.GetSessions,
     },
 }
 
@@ -44,7 +52,7 @@ func LaunchRouter() *mux.Router {
     for _, route := range routes {
         var handler http.Handler
         handler = route.HandlerFunc
-        handler = Logger(handler, route.Name)
+        handler = services.Logger(handler, route.Name)
 
         router.
             Methods(route.Method).
