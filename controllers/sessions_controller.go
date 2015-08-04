@@ -5,48 +5,55 @@ import(
     "encoding/json"
 
     "github.com/gabz75/auth-api/models"
-    "github.com/gabz75/auth-api/services"
 )
 
+// AuthenticationToken -
 type AuthenticationToken struct {
 	Token string `json:"token"`
 }
 
-type AuthenticationError struct {
+// ErrorMessage -
+type ErrorMessage struct {
 	Message string `json:"error"`
 }
 
 // PostSession - Generate a token given a valid email/password
 func PostSession(w http.ResponseWriter, r *http.Request) {
-	db := services.DatabaseConnection()
 	decoder := json.NewDecoder(r.Body)
 
     var user models.User;
 
     err := decoder.Decode(&user)
-
     if err != nil {
         panic(err)
     }
 
-    result := models.GetUserByEmailAndPassword(db, user.Email, user.Password)
+    entry, err := models.GetUserByEmailAndPassword(user.Email, user.Password)
+    if err != nil {
+        Unauthorized(w, r)
+        return
+    }
 
-    if result != nil {
-    	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	    w.WriteHeader(401)
-	    if err := json.NewEncoder(w).Encode(AuthenticationError{Message: "invalid credentials"}); err != nil {
-	        panic(err)
-	    }
-    } else {
-    	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	    w.WriteHeader(201)
-	    if err := json.NewEncoder(w).Encode(AuthenticationToken{Token: services.GenerateToken()}); err != nil {
-	        panic(err)
-	    }
+    session := models.Session{UserID: entry.ID}
+    session.Save()
+
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(201)
+    if err := json.NewEncoder(w).Encode(session); err != nil {
+        panic(err)
     }
 }
 
 // GetSessions -
 func GetSessions(w http.ResponseWriter, r *http.Request) {
 
+}
+
+// Unauthorized -
+func Unauthorized(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(http.StatusUnauthorized)
+    if err := json.NewEncoder(w).Encode(ErrorMessage{ Message: "Unauthorized" }); err != nil {
+        panic(err)
+    }
 }

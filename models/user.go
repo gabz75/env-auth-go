@@ -1,20 +1,43 @@
 package models
 
 import(
-    "database/sql"
-    "golang.org/x/crypto/bcrypt"
-    "errors"
+    "reflect"
 
-    "github.com/gabz75/auth-api/services"
+    "golang.org/x/crypto/bcrypt"
+
+    "github.com/gabz75/auth-api/core"
 )
 
 // User Model
 type User struct {
-    ID int `json:"id"`
+    ID int64 `json:"id"`
     Email string `json:"email"`
     Password string `json:"password"`
 }
 
+// Schema -
+func (s *User) Schema() core.Mappings {
+  return core.Mappings{
+    core.Mapping{
+      "Email",
+      "email",
+      reflect.String,
+    },
+    core.Mapping {
+      "Password",
+      "password",
+      reflect.String,
+    },
+  }
+}
+
+// Table -
+func (s *User) Table() string {
+  return "users"
+}
+
+
+// Valid -
 func (user *User) Valid() bool {
     if user.Email == "" {
         return false
@@ -23,83 +46,28 @@ func (user *User) Valid() bool {
         return false
     }
 
+    return true
+}
+
+// Save -
+func (user *User) Save() {
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
     if err != nil {
         panic(err)
     }
 
     user.Password = string(hashedPassword)
 
-    return true
-}
-
-func (user *User) Save() {
-    db := services.DatabaseConnection()
-    CreateUser(db, user.Email, user.Password)
-}
-
-// CreateUser create user with email and password
-func CreateUser(db *sql.DB, email string, password string) {
-    _, err := db.Exec("INSERT INTO users (email, password) VALUES  ('" + email + "', '" + password + "')")
-
-    if err != nil {
+    if _, err := core.InsertQuery(user); err != nil {
         panic(err)
     }
 }
 
-// GetUserByEmail fetch user by email
-func GetUserByEmailAndPassword(db *sql.DB, email string, password string) error {
-    rows, err := db.Query("SELECT * FROM users WHERE email = $1", email)
+func (user *User) Destroy() {
+    db := core.DatabaseConnection()
 
-    if err != nil {
+    if _, err := db.Exec("DELETE FROM users WHERE id = $1", user.ID); err != nil {
         panic(err)
     }
-
-    defer rows.Close()
-
-    var user User;
-
-    for rows.Next() {
-        var id int
-        var email string
-        var hashedPassword string
-        err = rows.Scan(&id, &email, &hashedPassword)
-
-        user = User{ID: id, Email: email, Password: hashedPassword}
-    }
-    
-    if user.ID == 0 {
-        return errors.New("invalid email/password")
-    }
-
-    passwordMatch := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-
-    if passwordMatch != nil {
-        return errors.New("invalid email/password")   
-    }
-
-    return nil
-}
-
-func GetLastUser(db *sql.DB) User {
-    rows, err := db.Query("SELECT * FROM users ORDER BY id desc LIMIT 1")
-
-    if err != nil {
-        panic(err)
-    }
-
-    defer rows.Close()
-
-    var user User;
-
-    for rows.Next() {
-        var id int
-        var email string
-        var password string
-        err = rows.Scan(&id, &email, &password)
-
-        user = User{ID: id, Email: email, Password: password}
-    }
-
-    return user
 }

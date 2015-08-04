@@ -10,5 +10,5 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS sessions;
 CREATE TABLE sessions (
   user_id serial references users(id),
-  token varchar(60)
+  token varchar(233)
 );
