@@ -18,6 +18,7 @@ func CastField(p Persistable, mapping Mapping) interface{} {
     return f.String()
 }
 
+// InsertQuery -
 func InsertQuery(p Persistable) (sql.Result, error) {
     insert := InsertTextQuery(p)
     parameters := InsertParametersQuery(p)

@@ -21,18 +21,52 @@ func GetUserByEmailAndPassword(email string, password string) (*User, error) {
 
     var user User;
     var id int64
-    var _email string
+    var userEmail string
     var hashedPassword string
 
     for rows.Next() {
-        err = rows.Scan(&id, &_email, &hashedPassword)
-        user = User{ ID: id, Email: _email, Password: hashedPassword }
+        err = rows.Scan(&id, &userEmail, &hashedPassword)
+        if err != nil {
+            panic(err)
+        }
+        user = User{ ID: id, Email: userEmail, Password: hashedPassword }
     }
 
     nomatch := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 
     if nomatch != nil || user.ID == 0 {
         return nil, errors.New("invalid email/password")
+    }
+
+    return &user, nil
+}
+
+func GetUserFromToken(token string) (*User, error) {
+    db := core.DatabaseConnection()
+
+    rows, err := db.Query("SELECT users.* FROM users INNER JOIN sessions ON sessions.user_id = users.id WHERE sessions.token = $1", token)
+
+    if err != nil {
+        panic(err)
+    }
+
+    defer rows.Close()
+
+    var user User;
+    var id int64
+    var userEmail string
+    var hashedPassword string
+
+    for rows.Next() {
+        err = rows.Scan(&id, &userEmail, &hashedPassword)
+        if err != nil {
+            panic(err)
+        }
+        user = User{ ID: id, Email: userEmail, Password: hashedPassword }
+    }
+
+    if user.ID == 0 {
+        return nil, errors.New("invalid session")
     }
 
     return &user, nil

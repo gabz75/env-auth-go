@@ -5,16 +5,12 @@ import(
     "encoding/json"
 
     "github.com/gabz75/auth-api/models"
+    "github.com/gabz75/auth-api/core"
 )
 
 // AuthenticationToken -
 type AuthenticationToken struct {
 	Token string `json:"token"`
-}
-
-// ErrorMessage -
-type ErrorMessage struct {
-	Message string `json:"error"`
 }
 
 // PostSession - Generate a token given a valid email/password
@@ -38,7 +34,7 @@ func PostSession(w http.ResponseWriter, r *http.Request) {
     session.Save()
 
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-    w.WriteHeader(201)
+    w.WriteHeader(http.StatusCreated)
     if err := json.NewEncoder(w).Encode(session); err != nil {
         panic(err)
     }
@@ -46,14 +42,18 @@ func PostSession(w http.ResponseWriter, r *http.Request) {
 
 // GetSessions -
 func GetSessions(w http.ResponseWriter, r *http.Request) {
-
-}
-
-// Unauthorized -
-func Unauthorized(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-    w.WriteHeader(http.StatusUnauthorized)
-    if err := json.NewEncoder(w).Encode(ErrorMessage{ Message: "Unauthorized" }); err != nil {
+    w.WriteHeader(http.StatusOK)
+
+    token := core.ExtractToken(r.Header.Get("Authorization"))
+    user, err := models.GetUserFromToken(token)
+
+    if err != nil {
+        Unauthorized(w, r)
+        return
+    }
+
+    if err := json.NewEncoder(w).Encode(user); err != nil {
         panic(err)
     }
 }

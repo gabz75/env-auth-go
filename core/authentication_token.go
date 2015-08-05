@@ -1,9 +1,10 @@
 package core
 
 import (
-    "crypto/rsa"
     "time"
     "fmt"
+    "regexp"
+    "crypto/rsa"
     "io/ioutil"
 
     jwt "github.com/dgrijalva/jwt-go"
@@ -39,6 +40,7 @@ func init() {
     fatal(err)
 }
 
+// GenerateToken -
 func GenerateToken() string {
     token := jwt.New(jwt.GetSigningMethod("RS256"))
     token.Claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
@@ -46,4 +48,14 @@ func GenerateToken() string {
     fatal(err)
 
     return tokenString
+}
+
+// ExtractToken -
+func ExtractToken(authorizationHeader string) string {
+    regex, _ := regexp.Compile("Bearer (.{233})")
+    submatch := regex.FindStringSubmatch(authorizationHeader)
+    if len(submatch) == 2 {
+        return submatch[1]
+    }
+    return ""
 }
