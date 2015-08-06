@@ -13,7 +13,7 @@ type ErrorMessage struct {
     Message string `json:"error"`
 }
 
-// Unauthorized -
+// Unauthorized - send unauthorized http status code
 func Unauthorized(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     w.WriteHeader(http.StatusUnauthorized)
@@ -22,7 +22,7 @@ func Unauthorized(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-// Authenticate -
+// Authenticate - autenticate a user and return true or return false and send an unauthorized status
 func Authenticate(currentUser *models.User, w http.ResponseWriter, r *http.Request) bool {
     token := core.ExtractToken(r.Header.Get("Authorization"))
 

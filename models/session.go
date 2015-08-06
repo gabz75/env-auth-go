@@ -6,14 +6,14 @@ import (
   "github.com/gabz75/auth-api/core"
 )
 
-// Session -
+// Session - hold tokens to authenticate the User
 type Session struct {
   ID int64 `json:"id"`
   UserID int64 `json:"-"`
   Token string `json:"token"`
 }
 
-// Schema -
+// Schema - mapping between model and DB
 func (session *Session) Schema() core.Mappings {
   return core.Mappings{
     core.Mapping{
@@ -29,22 +29,20 @@ func (session *Session) Schema() core.Mappings {
   }
 }
 
-// Table -
+// Table - DB table name
 func (session *Session) Table() string {
   return "sessions"
 }
 
-// Save -
+// Save - insert session in DB
 func (session *Session) Save() {
     session.Token = core.GenerateToken()
     core.InsertQuery(session)
 }
 
-// Session -
+// Destroy - delete session from DB
 func (session *Session) Destroy() {
-    db := core.DatabaseConnection()
-
-    if _, err := db.Exec("DELETE FROM sessions WHERE id = $1", session.ID); err != nil {
+    if _, err := core.DeleteQuery(session); err != nil {
         panic(err)
     }
 }

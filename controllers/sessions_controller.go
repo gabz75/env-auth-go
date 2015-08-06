@@ -8,11 +8,6 @@ import(
     "github.com/gabz75/auth-api/core"
 )
 
-// AuthenticationToken -
-type AuthenticationToken struct {
-	Token string `json:"token"`
-}
-
 // PostSession - Generate a token given a valid email/password
 func PostSession(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
@@ -40,35 +35,38 @@ func PostSession(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-// GetSessions -
+// GetSessions - List all available sessions
 func GetSessions(w http.ResponseWriter, r *http.Request) {
     var user models.User
-    if authenticated := Authenticate(&user, w, r); authenticated {
+    if authenticated := Authenticate(&user, w, r); !authenticated {
+        return
+    }
 
-        w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-        w.WriteHeader(http.StatusOK)
-        sessions := models.GetSessions(user)
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(http.StatusOK)
 
-        if err := json.NewEncoder(w).Encode(sessions); err != nil {
-            panic(err)
-        }
+    sessions := models.GetSessions(user)
+
+    if err := json.NewEncoder(w).Encode(sessions); err != nil {
+        panic(err)
     }
 }
 
-// DestroySession -
+// DestroySession - Logout
 func DestroySession(w http.ResponseWriter, r *http.Request) {
     var user models.User
-    if authenticated := Authenticate(&user, w, r); authenticated {
-
-        w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-        w.WriteHeader(http.StatusNoContent)
-
-        session, err := models.GetSession(user, core.ExtractToken(r.Header.Get("Authorization")))
-
-        if err != nil {
-            panic(err)
-        }
-
-        session.Destroy()
+    if authenticated := Authenticate(&user, w, r); !authenticated {
+        return
     }
+
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(http.StatusNoContent)
+
+    session, err := models.GetSession(user, core.ExtractToken(r.Header.Get("Authorization")))
+
+    if err != nil {
+        panic(err)
+    }
+
+    session.Destroy()
 }

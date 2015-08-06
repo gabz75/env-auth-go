@@ -24,25 +24,25 @@ var routes = Routes{
     Route{
         "PostUser",
         "POST",
-        "/users",
+        "/v1/users",
         controllers.PostUser,
     },
     Route{
         "PostSession",
         "POST",
-        "/sessions",
+        "/v1/sessions",
         controllers.PostSession,
     },
     Route{
         "GetSessions",
         "GET",
-        "/sessions",
+        "/v1/sessions",
         controllers.GetSessions,
     },
     Route{
         "DestroySession",
         "DELETE",
-        "/sessions",
+        "/v1/sessions",
         controllers.DestroySession,
     },
 }

@@ -17,7 +17,7 @@ func DatabaseConnection() *sql.DB {
     return db
 }
 
-// ExecuteQuery -
+// ExecuteQuery - initialize db connection and execute a query
 func ExecuteQuery(query string, parameters []interface {}) (sql.Result, error) {
     db := DatabaseConnection()
 

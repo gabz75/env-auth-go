@@ -4,12 +4,12 @@ import (
     "reflect"
 )
 
-// Mapping -
+// Mapping - describe the internal db structure of a model
 type Mapping struct {
     Name string
     DBName string
     Type reflect.Kind
 }
 
-// Mappings -
+// Mappings - slice of Mapping
 type Mappings []Mapping

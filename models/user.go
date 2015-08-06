@@ -8,14 +8,14 @@ import(
     "github.com/gabz75/auth-api/core"
 )
 
-// User Model
+// User model
 type User struct {
     ID int64 `json:"id"`
     Email string `json:"email"`
     Password string `json:"password"`
 }
 
-// Schema -
+// Schema - mapping between model and DB
 func (user *User) Schema() core.Mappings {
   return core.Mappings{
     core.Mapping{
@@ -31,14 +31,15 @@ func (user *User) Schema() core.Mappings {
   }
 }
 
-// Table -
+// Table - DB table name
 func (user *User) Table() string {
   return "users"
 }
 
 
-// Valid -
+// Valid - Verify if the model is valid before inserting into db
 func (user *User) Valid() bool {
+    // @TODO validate format of email and password
     if user.Email == "" {
         return false
     }
@@ -49,7 +50,7 @@ func (user *User) Valid() bool {
     return true
 }
 
-// Save -
+// Save - insert session in DB
 func (user *User) Save() {
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 
@@ -64,11 +65,9 @@ func (user *User) Save() {
     }
 }
 
-// Destroy -
+// Destroy - delete session from DB
 func (user *User) Destroy() {
-    db := core.DatabaseConnection()
-
-    if _, err := db.Exec("DELETE FROM users WHERE id = $1", user.ID); err != nil {
+    if _, err := core.DeleteQuery(user); err != nil {
         panic(err)
     }
 }

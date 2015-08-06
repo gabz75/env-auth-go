@@ -8,7 +8,6 @@ import (
   "github.com/stretchr/testify/assert"
 )
 
-
 func CreateUser() *models.User {
     var password = "qwertyuiop"
     var email = "test@gabe.com"
