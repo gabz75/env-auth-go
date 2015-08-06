@@ -39,6 +39,12 @@ var routes = Routes{
         "/sessions",
         controllers.GetSessions,
     },
+    Route{
+        "DestroySession",
+        "DELETE",
+        "/sessions",
+        controllers.DestroySession,
+    },
 }
 
 // LaunchRouter enable routes

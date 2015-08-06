@@ -40,7 +40,7 @@ func init() {
     fatal(err)
 }
 
-// GenerateToken -
+// GenerateToken - generate Token string
 func GenerateToken() string {
     token := jwt.New(jwt.GetSigningMethod("RS256"))
     token.Claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
@@ -50,7 +50,7 @@ func GenerateToken() string {
     return tokenString
 }
 
-// ExtractToken -
+// ExtractToken - extrat Token string Authorization header
 func ExtractToken(authorizationHeader string) string {
     regex, _ := regexp.Compile("Bearer (.{233})")
     submatch := regex.FindStringSubmatch(authorizationHeader)

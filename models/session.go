@@ -8,6 +8,7 @@ import (
 
 // Session -
 type Session struct {
+  ID int64 `json:"id"`
   UserID int64 `json:"-"`
   Token string `json:"token"`
 }
@@ -36,6 +37,14 @@ func (session *Session) Table() string {
 // Save -
 func (session *Session) Save() {
     session.Token = core.GenerateToken()
-
     core.InsertQuery(session)
+}
+
+// Session -
+func (session *Session) Destroy() {
+    db := core.DatabaseConnection()
+
+    if _, err := db.Exec("DELETE FROM sessions WHERE id = $1", session.ID); err != nil {
+        panic(err)
+    }
 }

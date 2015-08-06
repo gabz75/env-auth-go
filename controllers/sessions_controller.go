@@ -42,18 +42,33 @@ func PostSession(w http.ResponseWriter, r *http.Request) {
 
 // GetSessions -
 func GetSessions(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-    w.WriteHeader(http.StatusOK)
+    var user models.User
+    if authenticated := Authenticate(&user, w, r); authenticated {
 
-    token := core.ExtractToken(r.Header.Get("Authorization"))
-    user, err := models.GetUserFromToken(token)
+        w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+        w.WriteHeader(http.StatusOK)
+        sessions := models.GetSessions(user)
 
-    if err != nil {
-        Unauthorized(w, r)
-        return
+        if err := json.NewEncoder(w).Encode(sessions); err != nil {
+            panic(err)
+        }
     }
+}
 
-    if err := json.NewEncoder(w).Encode(user); err != nil {
-        panic(err)
+// DestroySession -
+func DestroySession(w http.ResponseWriter, r *http.Request) {
+    var user models.User
+    if authenticated := Authenticate(&user, w, r); authenticated {
+
+        w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+        w.WriteHeader(http.StatusNoContent)
+
+        session, err := models.GetSession(user, core.ExtractToken(r.Header.Get("Authorization")))
+
+        if err != nil {
+            panic(err)
+        }
+
+        session.Destroy()
     }
 }

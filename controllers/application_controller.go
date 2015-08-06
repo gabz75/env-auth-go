@@ -3,6 +3,9 @@ package controllers
 import (
     "net/http"
     "encoding/json"
+
+    "github.com/gabz75/auth-api/models"
+    "github.com/gabz75/auth-api/core"
 )
 
 // ErrorMessage -
@@ -17,4 +20,27 @@ func Unauthorized(w http.ResponseWriter, r *http.Request) {
     if err := json.NewEncoder(w).Encode(ErrorMessage{ Message: "Unauthorized" }); err != nil {
         panic(err)
     }
+}
+
+// Authenticate -
+func Authenticate(currentUser *models.User, w http.ResponseWriter, r *http.Request) bool {
+    token := core.ExtractToken(r.Header.Get("Authorization"))
+
+    user, err := models.GetUserByToken(token)
+
+    if err != nil {
+        Unauthorized(w, r)
+        return false
+    }
+
+    currentUser.ID = user.ID
+    currentUser.Email = user.Email
+    currentUser.Password = user.Password
+
+    if currentUser.ID == 0 {
+        Unauthorized(w, r)
+        return false
+    }
+
+    return true
 }

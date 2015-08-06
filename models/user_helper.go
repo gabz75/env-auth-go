@@ -2,6 +2,7 @@ package models
 
 import (
     "errors"
+
     "golang.org/x/crypto/bcrypt"
 
     "github.com/gabz75/auth-api/core"
@@ -41,10 +42,12 @@ func GetUserByEmailAndPassword(email string, password string) (*User, error) {
     return &user, nil
 }
 
-func GetUserFromToken(token string) (*User, error) {
+// GetUserByToken -
+func GetUserByToken(token string) (*User, error) {
     db := core.DatabaseConnection()
 
-    rows, err := db.Query("SELECT users.* FROM users INNER JOIN sessions ON sessions.user_id = users.id WHERE sessions.token = $1", token)
+    query := "SELECT users.* FROM users INNER JOIN sessions ON sessions.user_id = users.id WHERE sessions.token = $1"
+    rows, err := db.Query(query, token)
 
     if err != nil {
         panic(err)
@@ -52,7 +55,7 @@ func GetUserFromToken(token string) (*User, error) {
 
     defer rows.Close()
 
-    var user User;
+    var user User
     var id int64
     var userEmail string
     var hashedPassword string

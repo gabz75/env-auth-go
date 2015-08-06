@@ -16,7 +16,7 @@ type User struct {
 }
 
 // Schema -
-func (s *User) Schema() core.Mappings {
+func (user *User) Schema() core.Mappings {
   return core.Mappings{
     core.Mapping{
       "Email",
@@ -32,7 +32,7 @@ func (s *User) Schema() core.Mappings {
 }
 
 // Table -
-func (s *User) Table() string {
+func (user *User) Table() string {
   return "users"
 }
 
@@ -64,6 +64,7 @@ func (user *User) Save() {
     }
 }
 
+// Destroy -
 func (user *User) Destroy() {
     db := core.DatabaseConnection()
 
