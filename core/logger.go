@@ -22,3 +22,8 @@ func Logger(inner http.Handler, name string) http.Handler {
         )
     })
 }
+
+// LogFatal -
+func LogFatal(error string) {
+    log.Printf("[ERROR] %s", error)
+}

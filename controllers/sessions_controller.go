@@ -16,7 +16,8 @@ func PostSession(w http.ResponseWriter, r *http.Request) {
 
     err := decoder.Decode(&user)
     if err != nil {
-        panic(err)
+        BadRequest(err, w, r)
+        return
     }
 
     entry, err := models.GetUserByEmailAndPassword(user.Email, user.Password)
@@ -31,7 +32,8 @@ func PostSession(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     w.WriteHeader(http.StatusCreated)
     if err := json.NewEncoder(w).Encode(session); err != nil {
-        panic(err)
+        InternalServerError(err, w, r)
+        return
     }
 }
 
@@ -48,7 +50,8 @@ func GetSessions(w http.ResponseWriter, r *http.Request) {
     sessions := models.GetSessions(user)
 
     if err := json.NewEncoder(w).Encode(sessions); err != nil {
-        panic(err)
+        InternalServerError(err, w, r)
+        return
     }
 }
 
@@ -65,7 +68,8 @@ func DestroySession(w http.ResponseWriter, r *http.Request) {
     session, err := models.GetSession(user, core.ExtractToken(r.Header.Get("Authorization")))
 
     if err != nil {
-        panic(err)
+        BadRequest(err, w, r)
+        return
     }
 
     session.Destroy()

@@ -9,26 +9,31 @@ import(
 
 // PostUser -
 func PostUser(w http.ResponseWriter, r *http.Request) {
-    decoder := json.NewDecoder(r.Body)
-
     var user models.User;
-    var status = 422;
 
+    decoder := json.NewDecoder(r.Body)
     err := decoder.Decode(&user)
 
     if err != nil {
-        panic(err)
+        BadRequest(err, w, r)
+        return
     }
 
-    if user.Valid() {
-        user.Save()
-        status = 200
+    if err := user.Valid(); err != nil {
+        UnprocessableEntity(err, w, r)
+        return
+    }
+
+    if err := user.Save(); err != nil {
+        InternalServerError(err, w, r)
+        return
     }
 
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-    w.WriteHeader(status)
+    w.WriteHeader(http.StatusCreated)
 
     if err := json.NewEncoder(w).Encode(user); err != nil {
-        panic(err)
+        InternalServerError(err, w, r)
+        return
     }
 }

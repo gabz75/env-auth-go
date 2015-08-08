@@ -13,11 +13,27 @@ type ErrorMessage struct {
     Message string `json:"error"`
 }
 
-// Unauthorized - send unauthorized http status code
-func Unauthorized(w http.ResponseWriter, r *http.Request) {
+// BadRequest - 400 HTTP response
+func BadRequest(err error, w http.ResponseWriter, r *http.Request) {
+    ErrorHandler(err.Error(), http.StatusBadRequest, w, r)
+}
+
+// UnprocessableEntity - 422 HTTP response
+func UnprocessableEntity(err error, w http.ResponseWriter, r *http.Request) {
+    ErrorHandler(err.Error(), 422, w, r)
+}
+
+// InternalServerError - 500 HTTP response
+func InternalServerError(err error, w http.ResponseWriter, r *http.Request) {
+    core.LogFatal(err.Error())
+    ErrorHandler("Internal Server Error", http.StatusInternalServerError, w, r)
+}
+
+// ErrorHandler - error handler
+func ErrorHandler(errorMessage string, httpStatus int, w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-    w.WriteHeader(http.StatusUnauthorized)
-    if err := json.NewEncoder(w).Encode(ErrorMessage{ Message: "Unauthorized" }); err != nil {
+    w.WriteHeader(httpStatus)
+    if err := json.NewEncoder(w).Encode(ErrorMessage{ Message: errorMessage }); err != nil {
         panic(err)
     }
 }
@@ -43,4 +59,13 @@ func Authenticate(currentUser *models.User, w http.ResponseWriter, r *http.Reque
     }
 
     return true
+}
+
+// Unauthorized - send unauthorized http status code
+func Unauthorized(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(http.StatusUnauthorized)
+    if err := json.NewEncoder(w).Encode(ErrorMessage{ Message: "Unauthorized" }); err != nil {
+        panic(err)
+    }
 }
