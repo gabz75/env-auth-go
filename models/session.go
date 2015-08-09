@@ -4,6 +4,7 @@ import (
   "reflect"
 
   "github.com/gabz75/auth-api/core"
+  "github.com/gabz75/auth-api/core/orm"
 )
 
 // Session - hold tokens to authenticate the User
@@ -14,14 +15,14 @@ type Session struct {
 }
 
 // Schema - mapping between model and DB
-func (session *Session) Schema() core.Mappings {
-    return core.Mappings{
-        core.Mapping{
+func (session *Session) Schema() orm.Mappings {
+    return orm.Mappings{
+        orm.Mapping{
             "UserID",
             "user_id",
             reflect.Int,
         },
-        core.Mapping {
+        orm.Mapping {
             "Token",
             "token",
             reflect.String,
@@ -38,7 +39,7 @@ func (session *Session) Table() string {
 func (session *Session) Save() error {
     session.Token = core.GenerateToken()
 
-    if _, err := core.InsertQuery(session); err != nil {
+    if _, err := orm.Insert(session); err != nil {
       return err
     }
 
@@ -47,7 +48,7 @@ func (session *Session) Save() error {
 
 // Destroy - delete session from DB
 func (session *Session) Destroy() error {
-    if _, err := core.DeleteQuery(session); err != nil {
+    if _, err := orm.Delete(session); err != nil {
         return err
     }
 

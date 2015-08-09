@@ -3,12 +3,12 @@ package models
 import (
     "errors"
 
-    "github.com/gabz75/auth-api/core"
+    "github.com/gabz75/auth-api/core/orm"
 )
 
 // GetSessions -
 func GetSessions(user User) []Session {
-    db := core.DatabaseConnection()
+    db := orm.DatabaseConnection()
 
     rows, err := db.Query("SELECT * FROM sessions WHERE user_id = $1", user.ID)
 
@@ -32,7 +32,7 @@ func GetSessions(user User) []Session {
 
 // GetSession -
 func GetSession(user User, token string) (*Session, error) {
-    db := core.DatabaseConnection()
+    db := orm.DatabaseConnection()
 
     rows, err := db.Query("SELECT * FROM sessions WHERE user_id = $1 AND token = $2", user.ID, token)
 

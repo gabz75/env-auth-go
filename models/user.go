@@ -6,7 +6,7 @@ import(
 
     "golang.org/x/crypto/bcrypt"
 
-    "github.com/gabz75/auth-api/core"
+    "github.com/gabz75/auth-api/core/orm"
 )
 
 // User model
@@ -17,14 +17,14 @@ type User struct {
 }
 
 // Schema - mapping between model and DB
-func (user *User) Schema() core.Mappings {
-    return core.Mappings{
-        core.Mapping{
+func (user *User) Schema() orm.Mappings {
+    return orm.Mappings{
+        orm.Mapping{
             "Email",
             "email",
             reflect.String,
         },
-        core.Mapping {
+        orm.Mapping {
             "Password",
             "password",
             reflect.String,
@@ -62,7 +62,7 @@ func (user *User) Save() error {
 
     user.Password = string(hashedPassword)
 
-    if _, err := core.InsertQuery(user); err != nil {
+    if _, err := orm.Insert(user); err != nil {
         return err
     }
 
@@ -71,7 +71,7 @@ func (user *User) Save() error {
 
 // Destroy - delete session from DB
 func (user *User) Destroy() error {
-    if _, err := core.DeleteQuery(user); err != nil {
+    if _, err := orm.Delete(user); err != nil {
         return err
     }
 
