@@ -66,6 +66,14 @@ func (user *User) Save() error {
         return err
     }
 
+    id, err := orm.LastInsertedID(user)
+
+    if err != nil {
+        return err
+    }
+
+    user.ID = id
+
     return nil
 }
 

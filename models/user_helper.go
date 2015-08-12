@@ -2,7 +2,6 @@ package models
 
 import (
     "errors"
-    "fmt"
 
     "golang.org/x/crypto/bcrypt"
 
@@ -96,8 +95,6 @@ func AvailableEmail(email string) bool {
             panic(err)
         }
     }
-
-    fmt.Println(count)
 
     return count == 0
 }

@@ -1,6 +1,7 @@
 package orm
 
 import (
+    "errors"
     "reflect"
     "bytes"
     "strconv"
@@ -9,7 +10,15 @@ import (
 
 // Delete - Delete a persistable object from DB
 func Delete(p Persistable) (sql.Result, error) {
-    return ExecuteQuery(deleteQuery(p), []interface{} { CastField(p, "ID", reflect.Int64) })
+    result, error := ExecuteQuery(deleteQuery(p), []interface{} { CastField(p, "ID", reflect.Int64) })
+
+    count, _ := result.RowsAffected()
+
+    if count == int64(0) {
+        return nil, errors.New("no rows affected")
+    }
+
+    return result, error
 }
 
 func deleteQuery(p Persistable) string {
@@ -25,6 +34,33 @@ func deleteQuery(p Persistable) string {
 // Insert - Insert a Persistable object in DB
 func Insert(p Persistable) (sql.Result, error) {
     return ExecuteQuery(insertQuery(p), parameters(p))
+}
+
+// LastInsertedID - Return the last Id
+func LastInsertedID(p Persistable) (int64, error) {
+    db := DatabaseConnection()
+
+    mapping := p.Schema()[0]
+    firstAttribute := CastField(p, mapping.Name, mapping.Type)
+    query := "SELECT id FROM " + p.Table() + " WHERE " + mapping.Name + " = $1"
+    rows, error := db.Query(query, firstAttribute)
+
+    if error != nil {
+        return 0, error
+    }
+
+    defer rows.Close()
+
+    var id int64
+
+    for rows.Next() {
+        error = rows.Scan(&id)
+        if error != nil {
+            return 0, error
+        }
+    }
+
+    return id, nil
 }
 
 func insertQuery(p Persistable) string {
