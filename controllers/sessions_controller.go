@@ -4,8 +4,8 @@ import(
     "net/http"
     "encoding/json"
 
-    "github.com/gabz75/auth-api/models"
-    "github.com/gabz75/auth-api/core"
+    "github.com/gabz75/go-auth-api/models"
+    "github.com/gabz75/go-auth-api/core"
 )
 
 // PostSession - Generate a token given a valid email/password

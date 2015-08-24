@@ -3,8 +3,8 @@ package main
 import (
     "net/http"
 
-    "github.com/gabz75/auth-api/controllers"
-    "github.com/gabz75/auth-api/core"
+    "github.com/gabz75/go-auth-api/controllers"
+    "github.com/gabz75/go-auth-api/core"
 
     "github.com/gorilla/mux"
 )

@@ -11,8 +11,8 @@ import (
 )
 
 const (
-    privKeyPath = "/Users/Gabriel/workspace/go/src/github.com/gabz75/auth-api/config/keys/app.rsa"     // openssl genrsa -out app.rsa keysize
-    pubKeyPath  = "/Users/Gabriel/workspace/go/src/github.com/gabz75/auth-api/config/keys/app.rsa.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
+    privKeyPath = "/Users/Gabriel/workspace/go/src/github.com/gabz75/go-auth-api/config/keys/app.rsa"     // openssl genrsa -out app.rsa keysize
+    pubKeyPath  = "/Users/Gabriel/workspace/go/src/github.com/gabz75/go-auth-api/config/keys/app.rsa.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
 )
 
 var (

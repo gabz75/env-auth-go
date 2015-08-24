@@ -4,7 +4,7 @@ import(
     "net/http"
     "encoding/json"
 
-    "github.com/gabz75/auth-api/models"
+    "github.com/gabz75/go-auth-api/models"
 )
 
 // PostUser -

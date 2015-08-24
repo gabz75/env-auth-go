@@ -3,7 +3,7 @@ package models
 import (
     "errors"
 
-    "github.com/gabz75/auth-api/core/orm"
+    "github.com/gabz75/go-auth-api/core/orm"
 )
 
 // GetSessions -
