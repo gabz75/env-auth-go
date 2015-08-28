@@ -1,0 +1,9 @@
+{
+  "db": {
+    "driver": "postgres",
+    "hostname": "127.0.0.1",
+    "database": "go-auth-test",
+    "username": "app",
+    "password": "app"
+  }
+}

@@ -4,12 +4,15 @@ import (
     "database/sql"
     "log"
 
+    "github.com/gabz75/go-auth-api/core"
+
     _ "github.com/lib/pq"
 )
 
 // DatabaseConnection connect to the database
 func DatabaseConnection() *sql.DB {
-    db, err := sql.Open("postgres", "user=app dbname=go_auth sslmode=disable password=famousdev")
+    config := core.GetConfig()
+    db, err := sql.Open("postgres", "user=" + config.Db.Username + " dbname=" + config.Db.Database + " sslmode=disable password=" + config.Db.Password)
     if err != nil {
       log.Fatal(err)
     }
