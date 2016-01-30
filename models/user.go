@@ -6,7 +6,7 @@ import(
 
     "golang.org/x/crypto/bcrypt"
 
-    "github.com/gabz75/go-auth-api/core/orm"
+    "github.com/gabz75/env-auth/core/orm"
 )
 
 // User model

@@ -4,7 +4,7 @@ import (
     "database/sql"
     "log"
 
-    "github.com/gabz75/go-auth-api/core"
+    "github.com/gabz75/env-auth/core"
 
     _ "github.com/lib/pq"
 )

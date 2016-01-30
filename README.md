@@ -1,4 +1,4 @@
-# go-auth-api
+# env-auth
 
 JSON RESTFul auth API with Json Web Token
 

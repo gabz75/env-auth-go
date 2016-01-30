@@ -3,8 +3,8 @@ package models
 import (
   "reflect"
 
-  "github.com/gabz75/go-auth-api/core"
-  "github.com/gabz75/go-auth-api/core/orm"
+  "github.com/gabz75/env-auth/core"
+  "github.com/gabz75/env-auth/core/orm"
 )
 
 // Session - hold tokens to authenticate the User
